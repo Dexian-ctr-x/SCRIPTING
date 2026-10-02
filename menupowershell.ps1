@@ -65,6 +65,7 @@ do {
                 $clave = Read-Host "Contraseña inicial" -AsSecureString
                 $ruta = "OU=$ou,$dominio"
                 New-ADUser -Name "$nombre $apellido"  -GivenName $nombre -Surname $apellido -SamAccountName $login -UserPrincipalName "$login@$dnsDom"  -Path $ruta -AccountPassword $clave -Enabled $true -ChangePasswordAtLogon $true
+                New-ADGroup -Name $grupos -Path $ruta -GroupScope Global 
                 Add-ADGroupMember -Identity $grupos -Members $login 
                 Write-Host "Usuario $login creado y añadido al grupo $grupos"
                 Read-Host "Pulsa ENTER para continuar"   	
