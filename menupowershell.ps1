@@ -2,7 +2,9 @@
 Import-Module ActiveDirectory
 #Dominio
 $dominio = (Get-ADDomain).DistinguishedName
-
+$num_ous = (Get-ADOrganizationalUnit -Filter *).Count
+$num_grupos = (Get-ADGroup -Filter *).Count
+$num_usuarios = (Get-ADUser -Filter *).Count
 #1. Vistazo del menu
 do {
         Clear-Host
@@ -17,7 +19,7 @@ do {
         #2. Elegir una opción
         $option = Read-Host "Elige una opción"
 
-        #3 Según la opción, rellenar
+        #3 Según la opcion, rellenar
 
         switch ($option) {
 
@@ -25,9 +27,9 @@ do {
 
        "1" { Write-Host "Nombre del equipo : $env:COMPUTERNAME"
              Write-Host "Nombre del dominio : $dominio"
-             Write-Host "Número de OUs : (Get-ADOrganizationalUnit -Filter *)"
-             Write-Host "Número de grupos : (Get-ADGroup -Filter *)"
-             Write-Host "Número de usuarios : (Get-ADUser -Filter *)"
+             Write-Host "Número de OUs : $num_ous"
+             Write-Host "Número de grupos : $num_grupos"
+             Write-Host "Número de usuarios : $num_usuarios"
              Read-Host "Pulsa ENTER para continuar"
 
              }
@@ -36,6 +38,7 @@ do {
         "2" {
                 $ou = Read-Host "Nombre de la Unidad Organizativa"
                 New-ADOrganizationalUnit -Name $ou
+                $ruta = "OU=$ou,$dominio"
                 Write-Host "La UO ha sido creada correctamente"
                 Read-Host "Pulsa ENTER para continuar"
             }
@@ -46,7 +49,7 @@ do {
 		    $grupos = Read-Host "Nombre del grupo"
 		    $ou = Read-Host "Nombre de la Unidad Organizativa"
 		    $ruta = "OU=$ou,$dominio"
-                    New-ADOrganizationalUnit -Name $ou
+                    New-ADGroup -Name $grupos -Path $ruta -GroupScope Global 
                     Write-Host "El grupo ha sido creado correctamente"
                     Read-Host "Pulsa ENTER para continuar"  
         }
@@ -58,11 +61,12 @@ do {
 		    $apellido =  Read-Host "Introduzca el apellido"
 		    $login = Read-Host "Nombre de inicio de sesión (ej. alopez)"
                     $ou = Read-Host "Nombre de la Unidad Organizativa"
-                    $grupos = Read-Host "Nombre de la Unidad Organizativa"
+                    $grupos = Read-Host "Nombre del grupo"
                     $clave = Read-Host "Contraseña inicial" -AsSecureString
-                    $ruta = "OU=$ou,$dominio"
+                    $ruta = "OU=$grupos,$dominio"
+                    $ruta_grupo = "OU=$ou,$dominio"
                     New-ADUser -Name "$nombre $apellido"  -GivenName $nombre -Surname $apellido -SamAccountName $login -UserPrincipalName "$login@$dnsDom"  -Path $ruta -AccountPassword $clave -Enabled $true -ChangePasswordAtLogon $true
-                    Add-ADGroupMember -Identity $grupos -Members $login
+                    Add-ADGroupMember -Identity $grupos -Members $login -Path $ruta_grupo
                     Write-Host "Usuario $login creado y añadido al grupo $grupos"
                     Read-Host "Pulsa ENTER para continuar"   	
 	    }
