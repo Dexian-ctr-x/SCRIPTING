@@ -63,10 +63,9 @@ do {
                 $ou = Read-Host "Nombre de la Unidad Organizativa"
                 $grupos = Read-Host "Nombre del grupo"
                 $clave = Read-Host "Contraseña inicial" -AsSecureString
-                $ruta = "OU=$grupos,$dominio"
-                $ruta_grupo = "OU=$ou,$dominio"
+                $ruta = "OU=$ou,$dominio"
                 New-ADUser -Name "$nombre $apellido"  -GivenName $nombre -Surname $apellido -SamAccountName $login -UserPrincipalName "$login@$dnsDom"  -Path $ruta -AccountPassword $clave -Enabled $true -ChangePasswordAtLogon $true
-                Add-ADGroupMember -Identity $grupos -Members $login -Path $ruta_grupo
+                Add-ADGroupMember -Identity $grupos -Members $login 
                 Write-Host "Usuario $login creado y añadido al grupo $grupos"
                 Read-Host "Pulsa ENTER para continuar"   	
 	    }
