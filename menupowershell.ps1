@@ -23,7 +23,7 @@ do {
 
         switch ($option) {
 
-       #Opción 1
+       #Opción 1,Información del dominio
 
        "1" { Write-Host "Nombre del equipo : $env:COMPUTERNAME"
              Write-Host "Nombre del dominio : $dominio"
@@ -33,7 +33,7 @@ do {
              Read-Host "Pulsa ENTER para continuar"
 
              }
-        #Opción 2
+        #Opción 2, Crear OU
  
         "2" {
                 $ou = Read-Host "Nombre de la Unidad Organizativa"
@@ -43,7 +43,7 @@ do {
                 Read-Host "Pulsa ENTER para continuar"
             }
 
-        #Opción 3
+        #Opción 3, Crear grupo
 
         "3"{
 		    $grupos = Read-Host "Nombre del grupo"
@@ -54,9 +54,10 @@ do {
                     Read-Host "Pulsa ENTER para continuar"  
         }
 
-	#Opción 4
+	#Opción 4, Crear usuario
 
 	"4" {
+                #Datos del usuario
 		$nombre =  Read-Host "Introduzca el nombre"
 		$apellido =  Read-Host "Introduzca el apellido"
 		$login = Read-Host "Nombre de inicio de sesión (ej. alopez)"
@@ -64,13 +65,15 @@ do {
                 $grupos = Read-Host "Nombre del grupo"
                 $clave = Read-Host "Contraseña inicial" -AsSecureString
                 $ruta = "OU=$ou,$dominio"
+                
+                #Creación del usuario y del grupo, y añadir el usuario al grupo
                 New-ADUser -Name "$nombre $apellido"  -GivenName $nombre -Surname $apellido -SamAccountName $login -UserPrincipalName "$login@$dnsDom"  -Path $ruta -AccountPassword $clave -Enabled $true -ChangePasswordAtLogon $true
                 New-ADGroup -Name $grupos -Path $ruta -GroupScope Global 
                 Add-ADGroupMember -Identity $grupos -Members $login 
                 Write-Host "Usuario $login creado y añadido al grupo $grupos"
                 Read-Host "Pulsa ENTER para continuar"   	
 	    }
-	 #  OPCIÓN 5
+	 #  OPCIÓN 5, Salir
         "5" {
            	 Write-Host "Adiós"
                  exit
